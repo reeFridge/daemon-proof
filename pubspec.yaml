@@ -1,0 +1,5 @@
+name: daemonproof
+version: 0.0.1
+description: Proof-of-concept daemon application on Dart.
+dependencies:
+    args: any
