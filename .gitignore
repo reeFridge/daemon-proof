@@ -1,7 +1,7 @@
 # See https://www.dartlang.org/tools/private-files.html
 
 #Idea
-.idea
+.idea/
 
 # Files and directories created by pub
 .buildlog
