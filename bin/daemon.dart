@@ -7,11 +7,14 @@ void main(List<String> args) {
 		file.writeAsString('Daemon was received signal $sig');
 	});
 	
-	ProcessSignal.SIGUSR1.watch().listen((ProcessSignal sig) {
+	ProcessSignal.SIGTERM.watch().listen((ProcessSignal sig) {
 		File lockfile = new File('./daemon.lock');
 		lockfile.exists().then((bool exist) {
 			if (exist) {
-				lockfile.deleteSync();
+				int lock_pid = int.parse(lockfile.readAsStringSync());
+				if (lock_pid == pid) {
+					lockfile.deleteSync();
+				}
 			}
 			exit(0);
 		});
