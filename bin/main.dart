@@ -7,12 +7,12 @@ void main(List<String> args) {
 	parser.addOption('option', abbr: 'o', allowed: ['kill', 'restart']);
 	ArgResults results = parser.parse(args);
 	
-	File lockfile = new File('./daemon.lock');
-	lockfile.exists().then((bool exist) {
+	File pidFile = new File('./pidfile');
+	pidFile.exists().then((bool exist) {
 		switch (results['option']) {
 			case 'kill':
 				if (exist) {
-					int daemon_pid = int.parse(lockfile.readAsStringSync());
+					int daemon_pid = int.parse(pidFile.readAsStringSync());
 					stdout.writeln('Kill daemon with pid $daemon_pid.');
 					Process.killPid(daemon_pid);
 				} else {
@@ -22,7 +22,7 @@ void main(List<String> args) {
 				break;
 			case 'restart':
 				if (exist) {
-					int daemon_pid = int.parse(lockfile.readAsStringSync());
+					int daemon_pid = int.parse(pidFile.readAsStringSync());
 					stdout.writeln('Restart daemon with pid $daemon_pid.');
 					Process.killPid(daemon_pid);
 					spawnDaemon();
@@ -43,7 +43,7 @@ void main(List<String> args) {
 }
 
 void spawnDaemon() {
-	File lockfile = new File('./daemon.lock');
+	File pidFile = new File('./pidfile');
 	Process.start(
 		'dart',
 		['./bin/daemon.dart'],
@@ -51,7 +51,7 @@ void spawnDaemon() {
 		includeParentEnvironment: false
 	).then((Process proc) {
 		stdout.writeln('Daemon runs with pid: ${proc.pid}');
-		lockfile.writeAsStringSync(proc.pid.toString());
+		pidFile.writeAsStringSync(proc.pid.toString());
 		exit(0);
 	});
 }
