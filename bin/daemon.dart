@@ -8,12 +8,12 @@ void main(List<String> args) {
 	});
 	
 	ProcessSignal.SIGTERM.watch().listen((ProcessSignal sig) {
-		File lockfile = new File('./daemon.lock');
-		lockfile.exists().then((bool exist) {
+		File pidFile = new File('./pidfile');
+		pidFile.exists().then((bool exist) {
 			if (exist) {
-				int lock_pid = int.parse(lockfile.readAsStringSync());
+				int lock_pid = int.parse(pidFile.readAsStringSync());
 				if (lock_pid == pid) {
-					lockfile.deleteSync();
+					pidFile.deleteSync();
 				}
 			}
 			exit(0);
