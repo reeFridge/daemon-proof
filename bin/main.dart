@@ -24,7 +24,7 @@ void main(List<String> args) {
 				if (exist) {
 					int daemon_pid = int.parse(pidFile.readAsStringSync());
 					stdout.writeln('Restart daemon with pid $daemon_pid.');
-					Process.killPid(daemon_pid);
+					Process.killPid(daemon_pid, ProcessSignal.SIGUSR1);
 					spawnDaemon();
 				} else {
 					stdout.writeln('No daemon process to restart it.');
