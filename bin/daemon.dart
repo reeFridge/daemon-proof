@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:core';
 
+const int DEFAULT_PORT = 6649;
+
 void main(List<String> args) {
 	ProcessSignal.SIGUSR1.watch()
 		.listen((sig) => exit(0));
@@ -15,7 +17,7 @@ void main(List<String> args) {
 		});
 	});
 	
-	ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, 6649)
+	ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, DEFAULT_PORT)
 		.then((ServerSocket socket) {
 			socket.listen(handleClient);
 	});
