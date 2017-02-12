@@ -17,19 +17,7 @@ class DaemonCommander extends AbstractDaemonCommander {
 	void startDaemon() {
 		_requireDaemon((int pid) {
 			stdout.writeln('Daemon already running with pid: $pid');
-		}, () {
-			File pidFile = new File('./pidfile');
-			Process.start(
-				'dart',
-				['./bin/daemon.dart'],
-				mode: ProcessStartMode.DETACHED,
-				includeParentEnvironment: false
-			).then((Process proc) {
-				stdout.writeln('Daemon runs with pid: ${proc.pid}');
-				pidFile.writeAsStringSync(proc.pid.toString());
-				exit(0);
-			});
-		});
+		}, _spawnDaemon);
 	}
 	
 	void killDaemon() {
@@ -41,9 +29,9 @@ class DaemonCommander extends AbstractDaemonCommander {
 	
 	void restartDaemon() {
 		_requireDaemon((int pid) {
-			stdout.writeln('Kill daemon with pid $pid.');
-			Process.killPid(pid, ProcessSignal.SIGUSR1);
-			startDaemon();
+			stdout.writeln('Restart daemon with pid $pid.');
+			killDaemon();
+			_spawnDaemon();
 		}, () => stdout.writeln('No daemon process to restart it.'));
 	}
 	
@@ -53,5 +41,16 @@ class DaemonCommander extends AbstractDaemonCommander {
 		} else {
 			onNotExist();
 		}
+	}
+	
+	_spawnDaemon() {
+		Process.start(
+			'dart',
+			['./bin/daemon.dart'],
+			mode: ProcessStartMode.DETACHED,
+			includeParentEnvironment: false
+		).then((Process proc) {
+			stdout.writeln('Daemon runs with pid: ${proc.pid}');
+		});
 	}
 }
