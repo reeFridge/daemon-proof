@@ -4,8 +4,8 @@ import 'dart:core';
 const int DEFAULT_PORT = 6649;
 
 void main(List<String> args) {
-	ProcessSignal.SIGUSR1.watch()
-		.listen((sig) => exit(0));
+	File pidFile = new File('./pidfile');
+	pidFile.writeAsStringSync(pid.toString());
 	
 	ProcessSignal.SIGTERM.watch().listen((ProcessSignal sig) {
 		File pidFile = new File('./pidfile');
