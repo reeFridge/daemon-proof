@@ -5,11 +5,14 @@ abstract class AbstractDaemonCommander {
 	void startDaemon();
 	void killDaemon();
 	void restartDaemon();
+	set commands(Map<String, Function> commands);
+	void command(String command);
 }
 
 class DaemonCommander extends AbstractDaemonCommander {
 	File _pidFile;
 	String _daemonScript;
+	Map<String, Function> _commands;
 	DaemonCommander(String script, [ String pidFilePath = './pidfile' ])
 		: _daemonScript = script, _pidFile = new File(pidFilePath);
 	
@@ -56,4 +59,8 @@ class DaemonCommander extends AbstractDaemonCommander {
 			stdout.writeln('Daemon runs with pid: ${proc.pid}');
 		});
 	}
+	
+	set commands(Map<String, Function> commands) => _commands = commands;
+	
+	void command(String command) => _commands[command]();
 }
