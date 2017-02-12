@@ -6,8 +6,8 @@ void main(List<String> args) {
 	ArgParser parser = new ArgParser();
 	ArgResults results;
 	
-	parser.addOption('option',
-		abbr: 'o',
+	parser.addOption('command',
+		abbr: 'c',
 		allowed: ['start', 'restart', 'kill'],
 		defaultsTo: 'start'
 	);
