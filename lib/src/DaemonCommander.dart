@@ -8,10 +8,13 @@ abstract class AbstractDaemonCommander {
 }
 
 class DaemonCommander extends AbstractDaemonCommander {
-	DaemonCommander();
+	File _pidFile;
+	String _daemonScript;
+	DaemonCommander(String script, [ String pidFilePath = './pidfile' ])
+		: _daemonScript = script, _pidFile = new File(pidFilePath);
 	
 	bool isDaemonRunning() {
-		return new File('./pidfile').existsSync();
+		return _pidFile.existsSync();
 	}
 	
 	void startDaemon() {
@@ -35,18 +38,18 @@ class DaemonCommander extends AbstractDaemonCommander {
 		}, () => stdout.writeln('No daemon process to restart it.'));
 	}
 	
-	_requireDaemon(void onExist(int), void onNotExist()) {
+	void _requireDaemon(void onExist(int), void onNotExist()) {
 		if (isDaemonRunning()) {
-			onExist(int.parse(new File('./pidfile').readAsStringSync()));
+			onExist(int.parse(_pidFile.readAsStringSync()));
 		} else {
 			onNotExist();
 		}
 	}
 	
-	_spawnDaemon() {
+	void _spawnDaemon() {
 		Process.start(
 			'dart',
-			['./bin/daemon.dart'],
+			[ _daemonScript, '-p', _pidFile.path],
 			mode: ProcessStartMode.DETACHED,
 			includeParentEnvironment: false
 		).then((Process proc) {
