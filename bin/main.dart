@@ -3,15 +3,23 @@ import 'package:args/args.dart';
 import 'package:daemonproof/src/DaemonCommander.dart';
 
 void main(List<String> args) {
+	DaemonCommander dc = new DaemonCommander('./bin/daemon.dart');
 	ArgParser parser = new ArgParser();
-	ArgResults results;
+	
+	var commands = new Map<String, Function>();
+	commands['kill'] = dc.killDaemon;
+	commands['restart'] = dc.restartDaemon;
+	commands['start'] = dc.startDaemon;
+	
+	dc.commands = commands;
 	
 	parser.addOption('command',
 		abbr: 'c',
-		allowed: ['start', 'restart', 'kill'],
+		allowed: commands.keys,
 		defaultsTo: 'start'
 	);
 	
+	ArgResults results;
 	try {
 		results = parser.parse(args);
 	} on FormatException catch(exception) {
@@ -19,17 +27,5 @@ void main(List<String> args) {
 		exit(1);
 	}
 	
-	DaemonCommander dc = new DaemonCommander('./bin/daemon.dart');
-	
-	switch (results['option']) {
-		case 'kill':
-			dc.killDaemon();
-			break;
-		case 'restart':
-			dc.restartDaemon();
-			break;
-		case 'start':
-		default:
-			dc.startDaemon();
-	}
+	dc.command(results['command']);
 }
