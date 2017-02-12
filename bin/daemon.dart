@@ -1,25 +1,19 @@
 import 'dart:io';
-import 'dart:core';
+import 'package:args/args.dart';
+import 'package:daemonproof/src/Daemon.dart';
 
 const int DEFAULT_PORT = 6649;
 
 void main(List<String> args) {
-	File pidFile = new File('./pidfile');
-	pidFile.writeAsStringSync(pid.toString());
+	ArgParser parser = new ArgParser();
+	parser.addOption('pid-file', abbr: 'p');
+	ArgResults results = parser.parse(args);
 	
-	ProcessSignal.SIGTERM.watch().listen((ProcessSignal sig) {
-		File pidFile = new File('./pidfile');
-		pidFile.exists().then((bool exist) {
-			if (exist) {
-				pidFile.deleteSync();
-			}
-			exit(0);
-		});
-	});
-	
-	ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, DEFAULT_PORT)
-		.then((ServerSocket socket) {
+	new Daemon(results['pid-file'], () {
+		ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, DEFAULT_PORT)
+			.then((ServerSocket socket) {
 			socket.listen(handleClient);
+		});
 	});
 }
 
